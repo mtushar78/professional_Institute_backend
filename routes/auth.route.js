@@ -7,6 +7,8 @@ const gravatar = require('gravatar');
 const auth = require('../middleware/auth');
 //user model
 const User = require('../models/user');
+const Passtoken = require('../models/passtoken');
+const emailService = require('../services/emailService');
 
 
 
@@ -62,7 +64,7 @@ router.post('/register', [
                 console.log(err.keyValue)
                 if (err.keyValue.email !== undefined) {
                     return res.status(500).json("This email is already used.")
-                }else{
+                } else {
                     return res.status(500).json("Unable to save in database.")
                 }
 
@@ -71,20 +73,6 @@ router.post('/register', [
             return res.status(201).json('User created successfully');
         });
 
-        // const payload = {
-        //     user: {
-        //         id: user.id
-        //     }
-        // }
-        // jwt.sign(payload, process.env.JWT_SECRET, {
-        //     expiresIn: 36000
-        // }, (err, token) => {
-        //     if (err) throw err;
-        //     res.status(200).json({
-        //         msg: 'success',
-        //         token: token
-        //     })
-        // })
     } catch (error) {
         console.log(error.message);
         res.status(500).json("Server Error")
@@ -151,6 +139,82 @@ router.get('/getAllUser', auth, async (req, res) => {
 
     console.log(user);
     return res.json(user);
+});
+router.post('/resetPassword', async (req, res) => {
+    console.log(req.body);
+    const email = req.body.email;
+    let user = await User.findOne({ email: email });
+    if (!user) {
+        return res.status(400).json({
+            msg: 'User does not exist'
+        })
+    }
+    const payload = {
+        email: email,
+        date: new Date()
+    }
+    jwt.sign(payload,
+        process.env.JWT_SECRET, {
+        expiresIn: 360000
+    }, (err, token) => {
+        if (err) throw err;
+        console.log(token);
+
+        const passtoken = new Passtoken({
+            email: email,
+            token: token,
+            isactive: true
+        });
+        // passtoken.save();
+        passtoken.save(function (err, passtoken1) {
+            if (err) {
+                console.log(err);
+                return res.status(500).json('Unable to save verification code.');
+            };
+            // console.log(passtoken1._id+" saved to passtoken collection.");
+            emailService(req.body.email, passtoken1.token);
+            return res.status(201).json('A verification email was sent to you.');
+        });
+    }
+    );
+});
+router.post('/verifyConfirmationToken', async (req, res) => {
+    console.log(req.body);
+    try{
+        Passtoken.find({ 'token': req.body.token,'isactive':true }).then(result => {
+            if (result.length > 0) {
+                return res.status(200).json({
+                    email: result[0].email
+                })
+            }else{
+                return res.status(403).json({error: "Invalid token"})
+            }
+        })
+    }catch (error) {
+        console.error(error);
+        return res.status(500).json({error:"Internal Error DB I/O"})
+    }
+    
+})
+router.post('/resetPasswordConfirm', async (req, res) => {
+    const email = req.body.email;
+    let password = req.body.password;
+    const salt = await bcrypt.genSalt(10);
+    password = await bcrypt.hash(password, salt);
+    console.log('encrypted password: ' + password);
+    const x = await Passtoken.findOneAndUpdate({'email': email,'isactive':true },{$set: {'isactive': false}});
+    console.log(x);
+    User.findOneAndUpdate(
+        { 'email': email },
+        {$set:{ 'password': password }}      //updatePassword
+    ).then((user) => {
+        // if(err) {
+        //     console.log('error: ' + err);
+        //     return res.status(400).json({ msg: err })
+        // }
+        console.log('DB password: ' + user);
+        return res.json({ msg: 'Password changed successfully!' })
+    })
 })
 
 
