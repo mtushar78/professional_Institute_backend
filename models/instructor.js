@@ -26,6 +26,10 @@ const InstructorSchema = mongoose.Schema({
         default: [],
         require: true
     },
+    date: {
+        type: String,
+        defult: new Date().toString(),
+    },
     history: {
         type: Array,
         default: []

@@ -51,9 +51,8 @@ router.post(
   ],
   async (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
-    
+
     console.log(req.body);
-    
 
     const { name, email, phoneNo, specialization, linkedin } = req.body;
 
@@ -65,25 +64,33 @@ router.post(
         .status(422)
         .json("Wrong file type. Please upload images of jpg/jpeg/png format");
     }
+    else{ //everything else
+      const instructor = new Instructors({
+        name: name,
+        email: email,
+        phoneNo: phoneNo,
+        specialization: specialization,
+        linkedin: linkedin,
+        image: image?image.filename:[],
+        date: new Date().toString(),
+      });
+  
+      instructor.save((err, instructor) => {
+        if (err) {
+          if (err.code === 11000) {
+            res
+              .status(500)
+              .json("Duplicate Input. This entry has already been enlisted");
+          } else {
+            res.status(err.status || 500).json(err.message);
+          }
+        } else {
+          console.log("Successfully added");
+          res.status(201).json(instructor);
+        }
+      });
+    }
 
-    const instructor = new Instructors({
-      name: name,
-      email: email,
-      phoneNo: phoneNo,
-      specialization: specialization,
-      linkedin: linkedin,
-      image: image.path,
-    });
-
-    instructor.save((err, instructor) => {
-      if (err) {
-      
-        res.status(err.status || 500).json(err.message);
-      } else {
-        console.log("Successfully added");
-        res.status(201).json(instructor);
-      }
-    });
   }
 );
 
@@ -92,15 +99,15 @@ router.post(
   [check("_id", "User Must be served to be deleted").not().isEmpty()],
   async (req, res) => {
     const { _id } = req.body;
-    Instructors.deleteOne({_id:_id}, (err, result)=>{
-        console.log("error",err)
-        console.log("result",result);
-        if(!err){
-            res.status(200).json("Successfully deleted");
-        }else{
-            res.status(400).json("Delete process stopped unexpectedly");
-        }
-    })
+    Instructors.deleteOne({ _id: _id }, (err, result) => {
+      console.log("error", err);
+      console.log("result", result);
+      if (!err) {
+        res.status(200).json("Successfully deleted");
+      } else {
+        res.status(400).json("Delete process stopped unexpectedly");
+      }
+    });
   }
 );
 
