@@ -35,6 +35,7 @@ const corsOpts = {
 app.use(cors(corsOpts));
 
 app.use("/api/user/", require("./routes/auth.route"));
+app.use("/category/", require("./routes/category.route"));
 
 
 app.post("/contactUs", async (req, res) => {
