@@ -37,9 +37,9 @@ router.post('/register', [
         })
     }
     const { name, phoneNo, email, password } = req.body;
-
+    
     try {
-        let user = await User.findOne({ phoneNo: phoneNo });
+        let user = await User.findOne({ email: email });
         console.log(user);
         if (user) {
             return res.status(400).json({

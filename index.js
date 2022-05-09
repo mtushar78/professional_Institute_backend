@@ -36,7 +36,8 @@ app.use(cors(corsOpts));
 
 app.use("/api/user/", require("./routes/auth.route"));
 app.use("/category/", require("./routes/category.route"));
-
+app.use("/instructor/", require("./routes/instructor.route"));
+app.use("/notice", require("./routes/notice.route"));
 
 app.post("/contactUs", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
