@@ -195,10 +195,6 @@ router.post(
                                         
                                     })
                                 }
-                                else if((index == categories.length-1) && (index1==category1.children.length-1)){
-                                    console.log("sdfsdfasd");
-                                    return res.status(400).json({ msg: "Not Found"})
-                                }
                             })
                         }
                     });
