@@ -123,41 +123,99 @@ router.post(
                 error: error.array(),
             });
         }
+        let isMatched = false;
         const { _id } = req.body;
-            
-
-        // return 1;
-
-        // res.json(categories);
-        try {
-            Categories.find({}, (err, categories) => {
-
-                if (err) return res.status(400).json("unable to delete category");
-
-                //  console.log(category1[0]._id);
-                //  console.log(_id);
-                 categories.map(category1=>{
-                    console.log(category1._id);
-                    console.log(_id);
-                    if (category1._id == _id) {       
-                        console.log('inside the if!');             
-                        Categories.deleteOne({_id: _id },(result => {
-                            console.log(result);
-                            return res.json({ msg: "Deleted" })
-                        }))
-                    }else{
-                        console.log('inside the else!');
+        const allCategories = await Categories.find({});
+        console.log(allCategories);
+        allCategories.map(category1 =>{
+            if(category1._id == _id){
+                isMatched = true;
+            }else if (category1.children.length > 0){
+                category1.children.map((child1,index1) => {
+                    if(child1._id == _id){
+                        isMatched = true;
+                    }else if (child1.children.length > 0){
+                        child1.children.map((child2,index2) =>{
+                            if(child2._id == _id){
+                                isMatched = true;
+                            }
+                        })
                     }
-                 })
-                
 
-            });
+                })
+            }
+        });
 
-
-
-        } catch (error) {
-            return res.json("error creating category    " + error);
+        if(isMatched){
+            try {
+                Categories.find({}, (err, categories) => {
+                    let isMatched = false;
+                    if (err) return res.status(400).json("unable to delete category");
+                     categories.map((category1,index) => {
+                        console.log(category1._id);
+                        console.log(_id);
+                        if (category1._id == _id) {
+                            console.log('inside the if!');
+                            Categories.deleteOne({ _id: _id }, async (result => {
+                                console.log(result);
+                                isMatched=true;
+                                return res.json({ msg: "Deleted" })
+                            }))
+                        } else if (category1.children.length > 0) {
+                            category1.children.map((child1,index1) => {
+                                if (child1._id == _id) {
+                                    Categories.findByIdAndUpdate(
+                                        { _id: category1._id },
+                                        { $pull: { children: { _id: child1._id } } },
+                                        async (err, result) => {
+    
+                                            if (err) return res.status(400).json({ msg: "Unable to delete category" })
+    
+                                            console.log(result);
+                                            console.log(err);
+                                            isMatched=true;
+                                            return res.json({ msg: "Deleted" });
+                                        }
+                                    )
+                                } else if (child1.children.length > 0) {
+                                    child1.children.map((child2,index2) => {
+                                        if (child2._id == _id) {
+                                            Categories.findByIdAndUpdate(
+                                                { _id: category1._id },
+                                                { $pull: { "children.$[].children": { _id: child2._id } } },
+                                                async (err, result) => {
+                                                    console.log(err);
+                                                    if (err) return res.status(400).json({ msg: "Unable to delete category" })
+                                                    console.log(result);
+                                                    isMatched=true;
+                                                    return res.json({ msg: "Deleted" })
+                                                }
+                                            )
+                                        }
+                                        
+                                    })
+                                }
+                                else if((index == categories.length-1) && (index1==category1.children.length-1)){
+                                    console.log("sdfsdfasd");
+                                    return res.status(400).json({ msg: "Not Found"})
+                                }
+                            })
+                        }
+                    });
+                   
+    
+    
+                });
+    
+    
+    
+            } catch (error) {
+                return res.json("error creating category    " + error);
+            }
+        }else{
+            return res.status(400).json({msg:"Category not found"})
         }
+        
     }
 );
 
