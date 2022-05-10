@@ -210,7 +210,7 @@ router.post(
     
     
             } catch (error) {
-                return res.json("error creating category    " + error);
+                return res.status(500).json("error creating category    " + error);
             }
         }else{
             return res.status(400).json({msg:"Category not found"})
