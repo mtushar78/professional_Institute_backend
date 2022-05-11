@@ -40,9 +40,23 @@ router.use(
 /*API REQUESTS START HERE*/
 
 router.get("/all", async (req, res) => {
-  const notice = await Notice.find();
+  const notice = await Notice.find().sort({_id:-1});
   return res.json(notice);
 });
+
+router.get("/getOne/:id", async (req, res) => {
+  console.log(req.params.id)
+  Notice.findOne(req.params, (err, result)=>{
+    
+    if(!err){
+      res.status(200).json(result);
+    }else{
+      console.log(err)
+      res.status(500).json("Server Error");
+    }
+  })
+})
+
 
 ///POST REQUEST
 router.post(
@@ -109,6 +123,8 @@ router.post(
     });
   }
 );
+
+
 
 router.post(
   "/update",
