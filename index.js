@@ -40,7 +40,7 @@ app.use("/instructor/", require("./routes/instructor.route"));
 app.use("/notice", require("./routes/notice.route"));
 app.use("/courses", require("./routes/courses.route"));
 app.use("/images", express.static("uploads"));
-
+app.use("/partners", require("./routes/partners.route"));
 app.post("/contactUs", async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   const data = req.body;
