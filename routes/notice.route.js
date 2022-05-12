@@ -62,7 +62,7 @@ router.get("/getOne/:id", async (req, res) => {
 router.post(
   "/create",
   [
-    check("tile", "title is required").not().isEmpty(),
+    check("title", "title is required").not().isEmpty(),
     check("description", "description is required").not().isEmpty(),
   ],
   async (req, res) => {
