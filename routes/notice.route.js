@@ -45,10 +45,13 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/getOne/:id", async (req, res) => {
-  console.log(req.params.id)
-  Notice.findOne(req.params, (err, result)=>{
+  
+  console.log(req.params)
+  const query = {_id: req.params.id}
+  Notice.findOne(query, (err, result)=>{
     
     if(!err){
+      console.log(result)
       res.status(200).json(result);
     }else{
       console.log(err)
