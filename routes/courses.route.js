@@ -8,9 +8,25 @@ const Courses = require("../models/courses");
 const Upload = require("../middleware/upload");
 
 router.get("/all", async (req, res) => {
-  const courses = await Courses.find();
+  const courses = await Courses.find().sort({_id:-1});
   return res.json(courses);
 });
+
+router.get("/getOne/:id", async (req, res) => {
+  
+  console.log(req.params)
+  const query = {_id: req.params.id}
+  Courses.findOne(query, (err, result)=>{
+    
+    if(!err){
+      
+      res.status(200).json(result);
+    }else{
+      console.log(err)
+      res.status(500).json("Server Error");
+    }
+  })
+})
 /*
 without using Multer through bodyFields req.body isn't showing any data. so I had to do it...
 */
