@@ -21,7 +21,7 @@ jobs:
           port: ${{secrets.SSH_PORT}}
           script: |
             ls
-            cd /home/prof_Inst/pi_backend/
+            cd /home
             ls
             # sudo git pull origin master -S
 
