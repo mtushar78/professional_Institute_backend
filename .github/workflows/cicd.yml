@@ -20,7 +20,9 @@ jobs:
           password: ${{secrets.SSH_PASSWORD}}
           port: ${{secrets.SSH_PORT}}
           script: |
+            ls
             cd /home/professional_institute/professional_Institute_backend/
-            sudo git pull origin master
+            ls
+            # sudo git pull origin master -S
 
-            sudo pm2 start index
+            # sudo pm2 start index
