@@ -20,9 +20,6 @@ jobs:
           password: ${{secrets.SSH_PASSWORD}}
           port: ${{secrets.SSH_PORT}}
           script: |
-            ls
-            sudo cd /home
-            ls
-            # sudo git pull origin master -S
-
-            # sudo pm2 start index
+            cd /home/prof_Inst/pi_backend/
+            sudo git pull origin master
+            sudo pm2 start index
