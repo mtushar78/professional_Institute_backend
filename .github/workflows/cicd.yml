@@ -21,5 +21,5 @@ jobs:
           port: ${{secrets.SSH_PORT}}
           script: |
             cd /home/prof_Inst/pi_backend/
-            sudo git pull https://mtushar78@gmail.com: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@github.com/mtushar78/professional_Institute_backend.git
+            sudo git pull https://${{ secrets.TOKEN }}@github.com/mtushar78/professional_Institute_backend.git
             sudo pm2 start index
