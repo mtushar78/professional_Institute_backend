@@ -22,6 +22,5 @@ jobs:
           script: |
             cd /home/professional_institute/professional_Institute_backend/
             sudo git pull origin master
-            mtushar78@gmail.com
-            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
+
             sudo pm2 start index
