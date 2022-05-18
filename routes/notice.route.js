@@ -10,7 +10,8 @@ const fileStorage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    const ext = String(file.mimetype).split("/")[1];
+    cb(null, Date.now() + "-" + Math.floor(Math.random() * 1e9) + "." + ext);
   },
 });
 const fileFilter = (req, file, cb) => {
@@ -39,15 +40,32 @@ router.use(
 /*API REQUESTS START HERE*/
 
 router.get("/all", async (req, res) => {
-  const notice = await Notice.find();
+  const notice = await Notice.find().sort({_id:-1});
   return res.json(notice);
 });
+
+router.get("/getOne/:id", async (req, res) => {
+  
+  console.log(req.params)
+  const query = {_id: req.params.id}
+  Notice.findOne(query, (err, result)=>{
+    
+    if(!err){
+      console.log(result)
+      res.status(200).json(result);
+    }else{
+      console.log(err)
+      res.status(500).json("Server Error");
+    }
+  })
+})
+
 
 ///POST REQUEST
 router.post(
   "/create",
   [
-    check("tile", "title is required").not().isEmpty(),
+    check("title", "title is required").not().isEmpty(),
     check("description", "description is required").not().isEmpty(),
   ],
   async (req, res) => {
@@ -108,6 +126,8 @@ router.post(
     });
   }
 );
+
+
 
 router.post(
   "/update",
