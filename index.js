@@ -68,7 +68,7 @@ app.post("/contactUs", async (req, res) => {
 });
 
 app.get("/", function (req, res) {
-  res.send("hello home");
+  res.send("hello home !! testing completed");
 });
 app.use((req, res) => {
   res.status(404).json({
