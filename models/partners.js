@@ -8,6 +8,10 @@ const PartnerSchema = mongoose.Schema({
         type: Array,
         default: [],
     },
+    date: {
+        type: String,
+        defult: new Date().toString(),
+    },
     history: {
         type: Array,
         default: []
