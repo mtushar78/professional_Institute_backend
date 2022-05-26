@@ -132,14 +132,33 @@ router.post('/login', [
 })
 
 
-router.get('/getAllUser', auth, async (req, res) => {
-
-    console.log(req.params.string);
+router.get('/getAllUser',auth, async (req, res) => {
+    // console.log(req.headers);
+    // console.log(req.params.string);
     const user = await User.find();
 
-    console.log(user);
+    //console.log(user);
     return res.json(user);
 });
+router.post("/updateRole",auth, async (req, res) => {
+    const { user, role } = req.body;
+    console.log(req.body);
+    res.header("Access-Control-Allow-Origin", "*");
+    let userInfo = { _id: user };
+    User.findOneAndUpdate(
+      userInfo,
+      {
+        role: role,
+      },
+      (err, result) => {
+        if (!err) {
+          //console.log(result);
+          res.status(200).json("Role Updated");
+        }
+      }
+    );
+  });
+
 router.post('/resetPassword', async (req, res) => {
     console.log(req.body);
     const email = req.body.email;
