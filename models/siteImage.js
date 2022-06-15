@@ -8,6 +8,10 @@ const SiteSchema = mongoose.Schema({
         type: Array,
         default: [],
     },
+    details: {
+        type: String,
+        default: ""
+    },
     history: {
         type: Array,
         default: []

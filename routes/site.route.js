@@ -62,7 +62,7 @@ router.get("/all", async (req, res) => {
   
       console.log(req.body);
   
-      const { location } = req.body;
+      const { location, details } = req.body;
   
       const files = req.files;
   
@@ -82,7 +82,8 @@ router.get("/all", async (req, res) => {
         console.log(fileNames);
         const siteImage = new SiteImage({
           location: location,
-          file: fileNames ? fileNames : []
+          file: fileNames ? fileNames : [],
+          details: details
         });
   
         siteImage.save((err, courses) => {
